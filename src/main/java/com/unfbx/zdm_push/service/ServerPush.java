@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,10 @@ public class ServerPush {
             content +="详细内容  "+map.get("详细内容")+"\n";
             content +="图片地址  "+map.get("图片地址")+"\n";
         }
+
+        System.out.println("-----------------------------------");
+        System.out.println(content);
+        System.out.println("-----------------------------------");
 
         param.put("content",content);
         param.put("template","html");
