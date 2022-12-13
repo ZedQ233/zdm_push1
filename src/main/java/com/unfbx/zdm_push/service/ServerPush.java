@@ -5,6 +5,7 @@ import com.unfbx.zdm_push.api.ServerPushPlusApi;
 import com.unfbx.zdm_push.constant.ServerJPushResponse;
 import com.unfbx.zdm_push.constant.ServerPushPlusResponse;
 import com.unfbx.zdm_push.constant.ServerResponse;
+import com.unfbx.zdm_push.pojo.Move;
 import com.unfbx.zdm_push.pojo.ZdmInfo;
 import lombok.extern.java.Log;
 
@@ -84,6 +85,48 @@ public class ServerPush {
         param.put("template","html");
         //群组 不填推送给自己
         param.put("topic","奶");
+
+        ServerPushPlusResponse serverPushResponse = serverPushPlusApi.sendToServerPushPlus(param);
+
+        if (serverPushResponse == null){
+            log.info("推送失败：系统异常");
+            return ServerResponse.createByError("推送失败");
+        }
+        if(serverPushResponse.isSuccess(serverPushResponse.getCode())){
+            return ServerResponse.createBySuccess("推送成功");
+        }
+        log.info("推送失败："+serverPushResponse.getMsg());
+        return ServerResponse.createByError("推送失败");
+    }
+
+    //推送电影
+    public ServerResponse pushPushMsgToWechat(List<Move> moves){
+        if(StringUtils.isBlank(keyValue)){
+            return ServerResponse.createByError("为配置微信推送密钥，到application.yml配置");
+        }
+        Map<String,String> param = new HashMap<>();
+        param.put("token",keyValue);
+        param.put("title","电影推送");
+
+        String content = "";
+        content+="共计"+moves.size()+"条记录";
+
+        for(int i = 0; i< moves.size(); i++){
+            content+=i+"<br>";
+            Move move = moves.get(i);
+            content +="title  "+move.getTitle()+"<br>";
+            content +="url  "+move.getUrl()+"<br>";
+            content +="img  "+ "<img src='"+move.getImg()+"' />";
+        }
+
+//        System.out.println("-----------------------------------");
+//        System.out.println(content);
+//        System.out.println("-----------------------------------");
+
+        param.put("content",content);
+        param.put("template","html");
+        //群组 不填推送给自己
+        param.put("topic","电影");
 
         ServerPushPlusResponse serverPushResponse = serverPushPlusApi.sendToServerPushPlus(param);
 

@@ -1,31 +1,39 @@
 package com.unfbx.zdm_push.controller;
 
-import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.unfbx.zdm_push.constant.ServerPushPlusResponse;
+import com.unfbx.zdm_push.constant.ServerResponse;
+import com.unfbx.zdm_push.pojo.Move;
+import com.unfbx.zdm_push.pojo.Top;
+import com.unfbx.zdm_push.service.ServerPush;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * @Author: ZedQ
  * @Date: 2022/12/11 14:14
  * @Description:
  */
+@Slf4j
 @RestController
-@RequestMapping("/express")
+@RequestMapping("/tools")
 public class ExpressController {
 
+    @Autowired
+    private ServerPush serverPush = new ServerPush();
 
     public class FiddlerReponseModel {
         private String message;
@@ -180,6 +188,134 @@ public class ExpressController {
         list.sort(Comparator.comparing(ToReachable::getReachable));
         return list;
     }
+
+
+
+    @GetMapping("/pianku")
+    public ArrayList<Move> PianKuList(@RequestParam(defaultValue = "") String word) {
+
+        String encode = URLUtil.encode(word);
+
+        //去掉前缀
+        encode = StrUtil.removePrefix(encode, "%");
+        //分割
+        String[] split = encode.split("%");
+
+        //设置_前缀
+        word = "";
+        for (String s : split) {
+            word += "_" + s;
+        }
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://www.btnull.org/s/ajax/" + word)
+                .get()
+                .addHeader("cookie", "BT_auth=d00dnpjGuwLvSRxwPHi1wFq41uE4jZt3oZqlwEuKx5CsuWszOksVDmwIlY4iPWkg1-LHAXTtcra0rSsoWdGt4ItSfp9f7tww4b_8ycOfYLldoS69uwQ4F1wKAngEH7OszEaR5WZk8NGyMpn6tdMqoQOwh4GYFIvwXUzuVI_bDaAHaBM; BT_cookietime=b4c45LQj3kQ7fvLCpxehUNpi0dX5juO-mtFmdds; d_c=d_1219810101")
+                .addHeader("Host", "www.btnull.org")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("Accept", "application/json, text/javascript, */*; q=0.01")
+                .addHeader("X-Requested-With", "XMLHttpRequest")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
+                .addHeader("Referer", "https://www.btnull.org/s/1---1/_E5_90_9E_E5_99_AC.html")
+//                .addHeader("Accept-Encoding", "gzip, deflate, br")
+                .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
+                .build();
+
+
+        Response response = null;
+        String string = "";
+
+        try {
+            response = client.newCall(request).execute();
+            string = response.body().string();
+            System.out.println(string);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //通过jsonObject 解析
+        JSONObject jsonObject = JSONUtil.parseObj(string);
+
+//        JSONObject data = (JSONObject) jsonObject.get("data");
+        JSONArray titleArray = (JSONArray) jsonObject.get("data");
+
+
+        ArrayList<Move> moves = new ArrayList<>();
+
+        for (Object o : titleArray) {
+            String title, url, img;
+
+            JSONObject json1 = JSONUtil.parseObj(o);
+            title = (String) json1.get("title");
+            url = (String) json1.get("url");
+            img = (String) json1.get("img");
+            moves.add(new Move(title, url, img));
+        }
+
+//        for (Move move : moves) {
+//            System.out.println(move);
+//        }
+
+
+        //推送
+//        if(moves.size()>0){
+//            ServerResponse serverResponse = null;
+//            serverResponse = serverPush.pushPushMsgToWechat(moves);
+//            log.info("~~~~~~~~~~~~~~~~"+serverResponse.getMsg()+"~~~~~~~~~~~~~~~~");
+//        }
+
+        return moves;
+    }
+
+
+
+    @GetMapping("/top")
+    public List<Top> TopsList(@RequestParam(defaultValue = "100038") String id) {
+        String token = "TURJeU1ESXhOVGMzTWpreU5UUT11OHNSU05UZzJhRXhuYkdoWGExQjVPRU5yVWpGVVYxZG1hVGhYUkVSdlNHbDJVWFZy";
+//        String id = "100038";
+
+        OkHttpClient client = new OkHttpClient();
+        List<Top> list = new ArrayList<>();
+        Request request = new Request.Builder()
+                .url("https://ionews.top/api/get.php?rule_id="+id+"&key="+token)
+                .get()
+                .addHeader("Host", "ionews.top")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("Accept", "application/json, text/javascript, */*; q=0.01;charset=utf-8")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
+                .addHeader("Origin", "https://ioois.com")
+                .addHeader("Referer", "https://ioois.com/")
+//                .addHeader("Accept-Encoding", "gzip, deflate, br")
+                .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            JSONObject jsonObject = new JSONObject(response.body().string());
+
+            JSONArray jsonArray = (JSONArray) jsonObject.get("data");
+            for (Object o : jsonArray) {
+                JSONObject json = (JSONObject) o;
+                list.add(json.toBean(Top.class));
+            }
+
+
+//            for (Top datum : list) {
+//                System.out.println(datum.toString());
+//            }
+//
+//            String s = jsonObject.toString();
+//            System.out.println(s);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+
 }
 
 
