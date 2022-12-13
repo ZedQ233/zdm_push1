@@ -41,29 +41,21 @@ jobs:
     - name: Update dependency graph
       uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
       
-    - name: 登录docker Docker Login 
-      # You may pin to the exact commit or the version.
-      # uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
-      uses: docker/login-action@v2.1.0
+    # 登录Docker Hub  
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
       with:
-        # Username used to log against the Docker registry
-        username: ${{secrets.DOCKERNAME}}
-        # Password or personal access token used to log against the Docker registry
-        password: ${{secrets.DOCKERPWD}}
-        # Log out from the Docker registry at the end of a job
-        logout: true
-        
-    - name: 拉取镜像tag Extract metadata (tags, labels) for Docker 
-      id: meta
-      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        username: ${{ secrets.DOCKERNAME }}
+        password: ${{ secrets.DOCKERPWD }}
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+    # build 镜像并push到中央仓库中  
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
       with:
-        images: 3112560244/push_api
-        
-    - name: 构建提交镜像 Build and push Docker image
-      uses: docker/build-push-action@v3.2.0
-      with:
-        context: .
+        context: ./
+        file: ./Dockerfile
         push: true
-        platforms: linux/amd64,linux/arm64
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/push_api:latest
