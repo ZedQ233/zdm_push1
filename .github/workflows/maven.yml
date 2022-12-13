@@ -47,9 +47,9 @@ jobs:
       uses: docker/login-action@v2.1.0
       with:
         # Username used to log against the Docker registry
-        username: ${{dockerName}}
+        username: ${{DOCKERNAME}}
         # Password or personal access token used to log against the Docker registry
-        password: ${{dockerPWD}}
+        password: ${{DOCKERPWD}}
         # Log out from the Docker registry at the end of a job
         logout: true
         
