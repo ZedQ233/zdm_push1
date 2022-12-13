@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -57,6 +58,46 @@ public class ServerPush {
         log.info("推送失败："+serverPushResponse.getErrmsg());
         return ServerResponse.createByError("推送失败");
     }
+
+
+
+    @PostConstruct
+    //推送docker信息
+    public ServerResponse pushPushMsgToWechat(){
+        if(StringUtils.isBlank(keyValue)){
+            return ServerResponse.createByError("为配置微信推送密钥，到application.yml配置");
+        }
+        Map<String,String> param = new HashMap<>();
+        param.put("token",keyValue);
+        param.put("title","docker镜像已上传");
+
+        String content = "docker镜像已上传dockerhub <br> 3112560244/push_api:latest <br> 来自 https://github.com/3112560244/zdm_push1/actions";
+
+
+
+//        System.out.println("-----------------------------------");
+//        System.out.println(content);
+//        System.out.println("-----------------------------------");
+
+        param.put("content",content);
+        param.put("template","html");
+//        //群组 不填推送给自己
+//        param.put("topic","电影");
+
+        ServerPushPlusResponse serverPushResponse = serverPushPlusApi.sendToServerPushPlus(param);
+
+        if (serverPushResponse == null){
+            log.info("推送失败：系统异常");
+            return ServerResponse.createByError("推送失败");
+        }
+        if(serverPushResponse.isSuccess(serverPushResponse.getCode())){
+            return ServerResponse.createBySuccess("推送成功");
+        }
+        log.info("推送失败："+serverPushResponse.getMsg());
+        return ServerResponse.createByError("推送失败");
+    }
+
+
 
     public ServerResponse pushPushMsgToWechat(ZdmInfo zdmInfo){
         if(StringUtils.isBlank(keyValue)){
