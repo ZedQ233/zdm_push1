@@ -1,5 +1,6 @@
 package com.unfbx.zdm_push.service;
 
+import cn.hutool.core.date.DateUtil;
 import com.unfbx.zdm_push.api.ServerJPushApi;
 import com.unfbx.zdm_push.api.ServerPushPlusApi;
 import com.unfbx.zdm_push.constant.ServerJPushResponse;
@@ -60,9 +61,8 @@ public class ServerPush {
     }
 
 
-
+    //推送docker信息 启动项目时执行
     @PostConstruct
-    //推送docker信息
     public ServerResponse pushPushMsgToWechat(){
         if(StringUtils.isBlank(keyValue)){
             return ServerResponse.createByError("为配置微信推送密钥，到application.yml配置");
@@ -71,7 +71,13 @@ public class ServerPush {
         param.put("token",keyValue);
         param.put("title","docker镜像已上传");
 
-        String content = "docker镜像已上传dockerhub <br> 3112560244/push_api:latest <br> 来自 https://github.com/3112560244/zdm_push1/actions";
+        String content = "docker镜像已上传dockerhub <br> " +
+                "3112560244/push_api:latest " +
+                "<br> " +
+                "来自 https://github.com/3112560244/zdm_push1/actions"
+                +"<br> "
+                + DateUtil.now();
+                ;
 
 
 
