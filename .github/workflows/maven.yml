@@ -62,11 +62,11 @@ jobs:
         tags: ${{ secrets.DOCKERNAME }}/push_api:latest
 
     # push后，用ssh连接服务器执行脚本    
-    - name: SSH
-      uses: fifsky/ssh-action@master
-      with:
-        command: |
-          sh start.sh
-        host: ${{ secrets.HOST }}
-        user: ${{ secrets.USER }}
-        key: ${{ secrets.PRIVATE_KEY}}
+    # - name: SSH
+    #   uses: fifsky/ssh-action@master
+     #  with:
+     #    command: |
+     #      sh start.sh
+     #    host: ${{ secrets.HOST }}
+    #     user: ${{ secrets.USER }}
+    #     key: ${{ secrets.PRIVATE_KEY}}
