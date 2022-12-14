@@ -50,6 +50,7 @@ jobs:
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
+      
     # build 镜像并push到中央仓库中  
     - name: Build and push
       id: docker_build
@@ -59,3 +60,13 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKERNAME }}/push_api:latest
+
+    # push后，用ssh连接服务器执行脚本    
+    # - name: SSH
+    #   uses: fifsky/ssh-action@master
+     #  with:
+     #    command: |
+     #      sh start.sh
+     #    host: ${{ secrets.HOST }}
+    #     user: ${{ secrets.USER }}
+    #     key: ${{ secrets.PRIVATE_KEY}}
