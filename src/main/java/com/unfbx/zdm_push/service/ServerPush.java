@@ -8,6 +8,9 @@ import com.unfbx.zdm_push.constant.ServerPushPlusResponse;
 import com.unfbx.zdm_push.constant.ServerResponse;
 import com.unfbx.zdm_push.pojo.Move;
 import com.unfbx.zdm_push.pojo.ZdmInfo;
+import com.unfbx.zdm_push.utils.JSMethods;
+import com.unfbx.zdm_push.utils.JavaScriptProvider;
+import com.unfbx.zdm_push.utils.TripleDES;
 import lombok.extern.java.Log;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +20,14 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.script.ScriptException;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +69,34 @@ public class ServerPush {
         log.info("推送失败："+serverPushResponse.getErrmsg());
         return ServerResponse.createByError("推送失败");
     }
+
+//    @PostConstruct
+//    public void getCode(){
+//        String h1 = "mDfmtmKmDtmDmmtDKmKtmKfKtmKDftmKmftmDDftmKfKtmKfDtDmDDtDKfftmKKDtmKmftDDmKtmDDKtDmKKtmDKftmDDKtmDKDtDfDmtmKmftmDfmtDfDDtmDmDtDfmDtmDDKtmmKmtDDfDtDmfDtmKfftmDmftmDmmtDmmftDmKKtDffKtmDmDtmmKKtDfmmtmKfKtmKmftmKfmtDmfKtmKKmtDmKKtmKfmtmDKftmDDftDDKftDmmmtmDDftmDKKtmKKmtDDmmtmDmftDmDDtDKfftDmKft";
+//        Integer u1 = 61;
+//        String n1 = "KDmftWhJc";
+//        Integer t1 = 40;
+//        Integer e1 = 4;
+//        Integer r1 = 52;
+//        try {
+//
+//
+//
+//            JavaScriptProvider<JSMethods> jsProvider = new JavaScriptProvider<>();
+////            JSMethods jsMethods = jsProvider.loadJs("com\\unfbx\\zdm_push\\utils\\js\\method.js",JSMethods.class);
+//            JSMethods jsMethods = jsProvider.loadJs("method",JSMethods.class);
+//            String code = jsMethods.getCode(h1,u1,n1,t1,e1,r1);
+//            String str = "SIg54C9I0rgA8RG6E8JAQqc1O5uKrZCqUIDALEZ2nFnSwuVIfsPOiOFccC4LSAGtGeYgealuH3ISKcGp5vQ8TA";
+//            System.out.println(code);
+//
+//
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (ScriptException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
     //推送docker信息 启动项目时执行

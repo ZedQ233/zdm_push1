@@ -10,14 +10,14 @@ import com.unfbx.zdm_push.constant.ServerResponse;
 import com.unfbx.zdm_push.pojo.Move;
 import com.unfbx.zdm_push.pojo.Top;
 import com.unfbx.zdm_push.service.ServerPush;
+import com.unfbx.zdm_push.utils.TopUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -30,7 +30,11 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/tools")
-public class ExpressController {
+@CrossOrigin
+public class ToolsController {
+
+    //订单列表
+    private Map<String,String> topMap;
 
     @Autowired
     private ServerPush serverPush = new ServerPush();
@@ -91,6 +95,9 @@ public class ExpressController {
 
 
     }
+
+
+
     /*
      * @author ZedQ
      * @date 2022/12/11 15:07
@@ -272,12 +279,18 @@ public class ExpressController {
 
 
     @GetMapping("/top")
-    public List<Top> TopsList(@RequestParam(defaultValue = "100038") String id) {
-        String token = "TURJeU1ESXhOVGMzTWpreU5UUT11OHNSU05UZzJhRXhuYkdoWGExQjVPRU5yVWpGVVYxZG1hVGhYUkVSdlNHbDJVWFZy";
+    public Object TopsList(@RequestParam(defaultValue = "") String id) {
+//        String token = "TURJeU1ESXhOVGMzTWpreU5UUT11OHNSU05UZzJhRXhuYkdoWGExQjVPRU5yVWpGVVYxZG1hVGhYUkVSdlNHbDJVWFZy";
+        String token = "TWpJeU1ESXhOVGMzTWpreU5UUT11OHNSU05UZzJTelpPV2tsNVR6UmFiRTF1U2pJMlJIZ3lVbkJrVG5ReFZrSlFVMDFa";
+
 //        String id = "100038";
+        if(StrUtil.isBlank(id)){
+            Map<String, String> topMap = TopUtils.getTopMap();
+            return null == topMap?"获取列表失败":topMap;
+        }
 
         OkHttpClient client = new OkHttpClient();
-        List<Top> list = new ArrayList<>();
+//        List<Top> list = new ArrayList<>();
         Request request = new Request.Builder()
                 .url("https://ionews.top/api/get.php?rule_id="+id+"&key="+token)
                 .get()
@@ -294,13 +307,13 @@ public class ExpressController {
         try {
             Response response = client.newCall(request).execute();
             JSONObject jsonObject = new JSONObject(response.body().string());
+            return jsonObject;
 
-            JSONArray jsonArray = (JSONArray) jsonObject.get("data");
-            for (Object o : jsonArray) {
-                JSONObject json = (JSONObject) o;
-                list.add(json.toBean(Top.class));
-            }
-
+//            JSONArray jsonArray = (JSONArray) jsonObject.get("data");
+//            for (Object o : jsonArray) {
+//                JSONObject json = (JSONObject) o;
+//                list.add(json.toBean(Top.class));
+//            }
 
 //            for (Top datum : list) {
 //                System.out.println(datum.toString());
@@ -311,7 +324,8 @@ public class ExpressController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return list;
+//        return list;
+        return "请求错误";
     }
 
 
