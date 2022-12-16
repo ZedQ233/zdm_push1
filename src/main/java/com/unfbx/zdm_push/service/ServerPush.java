@@ -53,22 +53,7 @@ public class ServerPush {
     private String keyValue;
 
 
-    public ServerResponse pushJMsgToWechat(ZdmInfo zdmInfo){
-        if(StringUtils.isBlank(keyValue)){
-            return ServerResponse.createByError("为配置微信推送密钥，到application.yml配置");
-        }
-        ServerJPushResponse serverPushResponse = serverJPushApi.sendToServerJiang(keyValue,zdmInfo.getName(), zdmInfo.getUrl());
 
-        if (serverPushResponse == null){
-            log.info("推送失败：系统异常");
-            return ServerResponse.createByError("推送失败");
-        }
-        if(serverPushResponse.isSuccess(serverPushResponse.getErrmsg())){
-            return ServerResponse.createBySuccess("推送成功");
-        }
-        log.info("推送失败："+serverPushResponse.getErrmsg());
-        return ServerResponse.createByError("推送失败");
-    }
 
 //    @PostConstruct
 //    public void getCode(){
@@ -142,7 +127,7 @@ public class ServerPush {
     }
 
 
-
+    //推送zdm
     public ServerResponse pushPushMsgToWechat(ZdmInfo zdmInfo){
         if(StringUtils.isBlank(keyValue)){
             return ServerResponse.createByError("为配置微信推送密钥，到application.yml配置");
@@ -223,6 +208,23 @@ public class ServerPush {
             return ServerResponse.createBySuccess("推送成功");
         }
         log.info("推送失败："+serverPushResponse.getMsg());
+        return ServerResponse.createByError("推送失败");
+    }
+
+    public ServerResponse pushJMsgToWechat(ZdmInfo zdmInfo){
+        if(StringUtils.isBlank(keyValue)){
+            return ServerResponse.createByError("为配置微信推送密钥，到application.yml配置");
+        }
+        ServerJPushResponse serverPushResponse = serverJPushApi.sendToServerJiang(keyValue,zdmInfo.getName(), zdmInfo.getUrl());
+
+        if (serverPushResponse == null){
+            log.info("推送失败：系统异常");
+            return ServerResponse.createByError("推送失败");
+        }
+        if(serverPushResponse.isSuccess(serverPushResponse.getErrmsg())){
+            return ServerResponse.createBySuccess("推送成功");
+        }
+        log.info("推送失败："+serverPushResponse.getErrmsg());
         return ServerResponse.createByError("推送失败");
     }
 }

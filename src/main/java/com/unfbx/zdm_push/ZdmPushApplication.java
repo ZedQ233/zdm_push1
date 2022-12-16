@@ -4,8 +4,10 @@ import com.github.lianjiatech.retrofit.spring.boot.annotation.RetrofitScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableAsync   //启动异步
 @SpringBootApplication
 @EnableScheduling
 @RetrofitScan("com.unfbx.zdm_push.api")

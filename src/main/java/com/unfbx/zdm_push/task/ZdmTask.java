@@ -40,7 +40,7 @@ public class ZdmTask {
     /**
      * 十分钟执行一次
      */
-    @Scheduled(cron = "${corn}")
+    @Scheduled(cron = "${corn.zdm}")
     public void execute() {
 //        String str = "奶";
 

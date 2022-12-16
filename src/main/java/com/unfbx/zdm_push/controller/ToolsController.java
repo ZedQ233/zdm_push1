@@ -5,10 +5,8 @@ import cn.hutool.core.util.URLUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.unfbx.zdm_push.constant.ServerPushPlusResponse;
-import com.unfbx.zdm_push.constant.ServerResponse;
+import com.unfbx.zdm_push.controller.actions.GetTopList;
 import com.unfbx.zdm_push.pojo.Move;
-import com.unfbx.zdm_push.pojo.Top;
 import com.unfbx.zdm_push.service.ServerPush;
 import com.unfbx.zdm_push.utils.TopUtils;
 import lombok.Data;
@@ -261,11 +259,6 @@ public class ToolsController {
             moves.add(new Move(title, url, img));
         }
 
-//        for (Move move : moves) {
-//            System.out.println(move);
-//        }
-
-
         //推送
 //        if(moves.size()>0){
 //            ServerResponse serverResponse = null;
@@ -276,58 +269,79 @@ public class ToolsController {
         return moves;
     }
 
-
-
     @GetMapping("/top")
     public Object TopsList(@RequestParam(defaultValue = "") String id) {
-//        String token = "TURJeU1ESXhOVGMzTWpreU5UUT11OHNSU05UZzJhRXhuYkdoWGExQjVPRU5yVWpGVVYxZG1hVGhYUkVSdlNHbDJVWFZy";
-        String token = "TWpJeU1ESXhOVGMzTWpreU5UUT11OHNSU05UZzJTelpPV2tsNVR6UmFiRTF1U2pJMlJIZ3lVbkJrVG5ReFZrSlFVMDFa";
 
-//        String id = "100038";
         if(StrUtil.isBlank(id)){
             Map<String, String> topMap = TopUtils.getTopMap();
             return null == topMap?"获取列表失败":topMap;
         }
 
-        OkHttpClient client = new OkHttpClient();
-//        List<Top> list = new ArrayList<>();
-        Request request = new Request.Builder()
-                .url("https://ionews.top/api/get.php?rule_id="+id+"&key="+token)
-                .get()
-                .addHeader("Host", "ionews.top")
-                .addHeader("Connection", "keep-alive")
-                .addHeader("Accept", "application/json, text/javascript, */*; q=0.01;charset=utf-8")
-                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
-                .addHeader("Origin", "https://ioois.com")
-                .addHeader("Referer", "https://ioois.com/")
-//                .addHeader("Accept-Encoding", "gzip, deflate, br")
-                .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            JSONObject jsonObject = new JSONObject(response.body().string());
+        JSONObject jsonObject = GetTopList.list.get(id);
+        if(null!=jsonObject){
             return jsonObject;
-
-//            JSONArray jsonArray = (JSONArray) jsonObject.get("data");
-//            for (Object o : jsonArray) {
-//                JSONObject json = (JSONObject) o;
-//                list.add(json.toBean(Top.class));
-//            }
-
-//            for (Top datum : list) {
-//                System.out.println(datum.toString());
-//            }
-//
-//            String s = jsonObject.toString();
-//            System.out.println(s);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-//        return list;
+
         return "请求错误";
     }
 
+//    @GetMapping("/top")
+//    public Object TopsList(@RequestParam(defaultValue = "") String id) {
+////        String token = "TURJeU1ESXhOVGMzTWpreU5UUT11OHNSU05UZzJhRXhuYkdoWGExQjVPRU5yVWpGVVYxZG1hVGhYUkVSdlNHbDJVWFZy";
+//        String token = "TWpJeU1ESXhOVGMzTWpreU5UUT11OHNSU05UZzJTelpPV2tsNVR6UmFiRTF1U2pJMlJIZ3lVbkJrVG5ReFZrSlFVMDFa";
+//
+////        String id = "100038";
+//        if(StrUtil.isBlank(id)){
+//            Map<String, String> topMap = TopUtils.getTopMap();
+//            return null == topMap?"获取列表失败":topMap;
+//        }
+//
+//        OkHttpClient client = new OkHttpClient();
+////        List<Top> list = new ArrayList<>();
+//        Request request = new Request.Builder()
+//                .url("https://ionews.top/api/get.php?rule_id="+id+"&key="+token)
+//                .get()
+//                .addHeader("Host", "ionews.top")
+//                .addHeader("Connection", "keep-alive")
+//                .addHeader("Accept", "application/json, text/javascript, */*; q=0.01;charset=utf-8")
+//                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
+//                .addHeader("Origin", "https://ioois.com")
+//                .addHeader("Referer", "https://ioois.com/")
+////                .addHeader("Accept-Encoding", "gzip, deflate, br")
+//                .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
+//                .build();
+//
+//        try {
+//            Response response = client.newCall(request).execute();
+//            JSONObject jsonObject = new JSONObject(response.body().string());
+//            return jsonObject;
+//
+////            JSONArray jsonArray = (JSONArray) jsonObject.get("data");
+////            for (Object o : jsonArray) {
+////                JSONObject json = (JSONObject) o;
+////                list.add(json.toBean(Top.class));
+////            }
+//
+////            for (Top datum : list) {
+////                System.out.println(datum.toString());
+////            }
+////
+////            String s = jsonObject.toString();
+////            System.out.println(s);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+////        return list;
+//        return "请求错误";
+//    }
+
+
+    @GetMapping("test")
+    public Object test(){
+        log.info("test请求");
+        Map<String, JSONObject> list = GetTopList.list;
+        return list;
+    }
 
 
 }
